@@ -10,9 +10,9 @@ pygame.init()
 WIDTH, HEIGHT = 633, 900
 
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-BACKGROUND = pygame.image.load("Starting Tiles.png")
+BACKGROUND = pygame.image.load("Assets/Starting Tiles.png")
 BACKGROUND_RECT = BACKGROUND.get_rect(center=(317, 300))
-ICON = pygame.image.load("Icon.png")
+ICON = pygame.image.load("Assets/Icon.png")
 
 pygame.display.set_caption("Wordle")
 pygame.display.set_icon(ICON)
@@ -27,8 +27,8 @@ CORRECT_WORD = random.choice(WORDS)
 
 ALPHABET = ["QERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
 
-GUESSED_LETTER_FONT = pygame.font.Font("FreeSansBold.otf", 50)
-AVAILABLE_LETTER_FONT = pygame.font.Font("FreeSansBold.otf", 25)
+GUESSED_LETTER_FONT = pygame.font.Font("Assets/FreeSansBold.otf", 50)
+AVAILABLE_LETTER_FONT = pygame.font.Font("Assets/FreeSansBold.otf", 25)
 
 SCREEN.fill("white")
 SCREEN.blit(BACKGROUND, BACKGROUND_RECT)
@@ -179,7 +179,7 @@ def check_guess(guess_to_check):
 def play_again():
     # Puts the play again text on the screen
     pygame.draw.rect(SCREEN, "white", (10, 600, 1000, 600))
-    play_again_font = pygame.font.Font("FreeSansBold.otf", 40)
+    play_again_font = pygame.font.Font("Assets/FreeSansBold.otf", 40)
     play_again_text = play_again_font.render("Press ENTER to Play Again!", True, "black")
     play_again_rect = play_again_text.get_rect(center=(WIDTH / 2, 700))
     word_was_text = play_again_font.render(f"The word was {CORRECT_WORD}!", True, "black")
