@@ -13,19 +13,35 @@ def main():
         
         
 def main_bot_loop(words, running = False):
+    new_word = False
+    last_results = None
+    
+    old_words = words
+    
     guess = 1
     while (running and guess <= 6):
         word = choice(words)
         word = word.lower()
         
         if guess == 1:
-            if "j" in word or "q" in word or "z" in word or "x" in word:
-                continue
-            elif has_duplicate_letters(word):
-                continue
-            else:
-                print(word)
+            word = choice(["adept", "clamp", "plaid", "scalp", "clasp", "depot", "print", "recap", "strap", "tramp",
+                           "slice", "tried", "crane", "leant", "close", "trice", "train", "slate", "lance", "trace"])
+            print(word)
+        elif new_word:
+            word = choice(old_words)
+            print(word)
         else:
+            scores = []
+            
+            for i in range(len(words)):
+                scores.append(calculate_word_score(words, word, i))
+                
+            score = max(scores)
+            
+            for i in range(len(scores)):
+                if scores[i] == score:
+                    word = words[i]
+            
             print(word)
         
         results = input('Enter the results in the format "xxxxx"\n')
@@ -52,7 +68,11 @@ def main_bot_loop(words, running = False):
         
         results = [char.strip() for char in results]
         
-        words = update_word_list(words, word, results)
+        if last_results != results:
+            words = update_word_list(words, word, results)
+            new_word = False
+        else:
+            new_word = True
         
         guess += 1
         
@@ -74,6 +94,21 @@ def update_word_list(words, word, results):
             words = [x for x in words if word[i] in x]
     
     return words
+
+def calculate_word_score(words, word, index):
+    score = 0
+    scores = []
+    
+    for i in range(len(word)):
+        score = 0
+        for j in range(len(words)):
+            if word[i] in words[j]:
+                score += 1
+        scores.append(score)
+        
+    score = sum(scores)
+                
+    return score
 
 if __name__ == "__main__":
     main()
