@@ -65,6 +65,13 @@ def main_bot_loop(words, running = False):
             sleep(1)
             print("\n")
             main()
+        elif results == "-----":
+            print("Removing {} from the word list...".format(word))
+            WORDS.remove(word)
+            words.remove(word)
+            old_words.remove(word)
+            sleep(0.5)
+            continue
         
         results = [char.strip() for char in results]
         
