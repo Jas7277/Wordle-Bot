@@ -20,7 +20,15 @@ def main_bot_loop(words, running = False):
     
     guess = 1
     while (running and guess <= 6):
-        word = choice(words)
+        try:
+            word = choice(words)
+        except IndexError():
+            print("Something went wrong, there are no remaining words in the list! Please enter the solution so that it may be added to the list of words.")
+            i = input("Word to add: ")
+            i = i.lower()
+            WORDS.append(i)
+            break
+        
         word = word.lower()
         
         if guess == 1:
