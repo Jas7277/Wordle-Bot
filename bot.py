@@ -89,7 +89,7 @@ def main_bot_loop(guess, words, running = False):
         if results == "ggggg":
             print("Congratulations! You win!")
             
-            should_continue = input("Do you want to continue? Y/N\n")
+            should_continue = input("Do you want to restart? Y/N\n")
             should_continue = should_continue.lower()
             
             if should_continue == "y":
@@ -104,13 +104,12 @@ def main_bot_loop(guess, words, running = False):
             sleep(1)
             print("\n")
             main()
-        elif results == "-----":
-            print("Removing {} from the word list...".format(word))
-            WORDS.remove(word)
-            words.remove(word)
-            old_words.remove(word)
-            sleep(0.5)
-            continue
+        elif len(results) != 5:
+            results = incorrect_results()
+            
+        for i in range(len(results)):
+            if results[i] != "x" and results[i] != "y" and results[i] != "g":
+                results = incorrect_results()
         
         results = [char.strip() for char in results]
         
@@ -160,6 +159,38 @@ def calculate_word_score(words, word):
             score += 1
             
     return score
+
+def incorrect_results():
+    print("Whoops! Looks like the results were input incorrectly! Try again!")
+    i = input('Enter the results in the format "xxxxx"\n')
+    i = i.lower()
+    
+    if i == "ggggg":
+        print("Congratulations! You Win!")
+        
+        want_to_continue = input("Do you want to restart? Y/N\n")
+        want_to_continue = want_to_continue.lower()
+        
+        if want_to_continue == "y":
+            print("Restarting...")
+            sleep(1)
+            print("\n")
+            main()
+            
+    elif i == "restart":
+        print("Restarting")
+        sleep(1)
+        print("\n")
+        main()
+    
+    elif len(i) != 5:
+        i = incorrect_results()
+        
+    for j in range(len(i)):
+        if i[j] != "x" and i[j] != "y" and i[j] != "g":
+            i = incorrect_results()
+        
+    return i
 
 if __name__ == "__main__":
     main()
