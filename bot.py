@@ -9,48 +9,78 @@ def main():
     
     words = WORDS
     
-    main_bot_loop(words, running)
+    i = input("Have you already made a first guess? y/n ")
+    i = i.lower()
+    
+    if i == "y":
+        words, guess = mid_game_join()
+        main_bot_loop(guess, words, running)
+    elif i == "n":
+        main_bot_loop(1, words, running)
+    else:
+        main()
         
+    
+def mid_game_join():
+    words_guessed = input("Enter each individual word you've already guessed with a space in between them. ")
+    words_guessed = words_guessed.lower()
+    
+    guessed = words_guessed.split(" ")
+    
+    for i in range(len(guessed)):
+        if guessed[i] not in WORDS:
+            WORDS.append(guessed[i])
+            
+    words_results = input("Enter the results of each word you've already guessed, with a space in between them. ")
+    
+    results_of_words = words_results.split(" ")
+    
+    words = []
+    
+    for i in range(len(guessed)):
+        words.append(update_word_list(guessed, guessed[i], results_of_words[i]))
         
-def main_bot_loop(words, running = False):
+    return words, len(guessed)
+    
+def main_bot_loop(guess, words, running = False):
     new_word = False
     last_results = None
     
     old_words = words
     
-    guess = 1
     while (running and guess <= 6):
         try:
             word = choice(words)
-        except IndexError():
+        except IndexError:
             print("Something went wrong, there are no remaining words in the list! Please enter the solution so that it may be added to the list of words.")
             i = input("Word to add: ")
             i = i.lower()
             WORDS.append(i)
             break
         
-        word = word.lower()
-        
         if guess == 1:
             word = choice(["adept", "clamp", "plaid", "scalp", "clasp", "depot", "print", "recap", "strap", "tramp",
                            "slice", "tried", "crane", "leant", "close", "trice", "train", "slate", "lance", "trace"])
             print(word)
+            words.remove(word)
         elif new_word:
             word = choice(old_words)
             print(word)
+            words.remove(word)
         else:
-            scores = []
+            scores = calculate_word_scores(words)
+            score = calculate_word_score(words, word)
             
-            for i in range(len(words)):
-                scores.append(calculate_word_score(words, word, i))
+            if score == max(scores):
+                should_print_word = True
+            else:
+                should_print_word = False
                 
-            score = max(scores)
-            
-            for i in range(len(scores)):
-                if scores[i] == score:
-                    word = words[i]
-            
-            print(word)
+            if should_print_word:
+                print(word)
+                words.remove(word)
+            else:
+                continue
         
         results = input('Enter the results in the format "xxxxx"\n')
         results = results.lower()
@@ -95,8 +125,6 @@ def has_duplicate_letters(word):
     return not len(set(word)) == len(word)
 
 def update_word_list(words, word, results):
-    words.remove(word)
-    
     for i in range(len(results)):
         if results[i] == "x":
             words = [x for x in words if word[i] not in x]
@@ -110,19 +138,26 @@ def update_word_list(words, word, results):
     
     return words
 
-def calculate_word_score(words, word, index):
-    score = 0
-    scores = []
+def calculate_word_scores(words):
+    scores = [] 
     
-    for i in range(len(word)):
-        score = 0
-        for j in range(len(words)):
-            if word[i] in words[j]:
+    for i in range(len(words)):
+        score = 0 
+        
+        for j in range(len(words[i])):
+            if words[i][j] in words:
                 score += 1
         scores.append(score)
         
-    score = sum(scores)
-                
+    return scores
+
+def calculate_word_score(words, word):
+    score = 0
+    
+    for i in range(len(word)):
+        if word[i] in words:
+            score += 1
+            
     return score
 
 if __name__ == "__main__":
