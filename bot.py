@@ -35,10 +35,11 @@ def mid_game_join():
     
     results_of_words = words_results.split(" ")
     
-    words = []
+    words = WORDS
     
     for i in range(len(guessed)):
-        words.append(update_word_list(guessed, guessed[i], results_of_words[i]))
+        words.remove(guessed[i])
+        words = update_word_list(words, guessed[i], results_of_words[i])
         
     return words, len(guessed) + 1
     
