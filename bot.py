@@ -26,10 +26,6 @@ def mid_game_join():
     words_guessed = words_guessed.lower()
     
     guessed = words_guessed.split(" ")
-    
-    for i in range(len(guessed)):
-        if guessed[i] not in WORDS:
-            WORDS.append(guessed[i])
             
     words_results = input("Enter the results of each word you've already guessed, with a space in between them. ")
     
@@ -38,8 +34,12 @@ def mid_game_join():
     words = WORDS
     
     for i in range(len(guessed)):
-        words.remove(guessed[i])
-        words = update_word_list(words, guessed[i], results_of_words[i])
+        if guessed[i] in words:
+            words.remove(guessed[i])
+            words = update_word_list(words, guessed[i], results_of_words[i])
+        else:
+            print("A word might've been spelled incorrectly! Check your spelling and try again")
+            words, guess = mid_game_join()
         
     return words, len(guessed) + 1
     
