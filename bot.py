@@ -40,13 +40,13 @@ def mid_game_join():
     for i in range(len(guessed)):
         words.append(update_word_list(guessed, guessed[i], results_of_words[i]))
         
-    return words, len(guessed)
+    return words, len(guessed) + 1
     
 def main_bot_loop(guess, words, running = False):
     new_word = False
     last_results = None
     
-    old_words = words
+    old_words = WORDS
     
     while (running and guess <= 6):
         try:
