@@ -1,197 +1,73 @@
 from random import choice
 from os import system
-from words import *
 from time import sleep
+from words import *
 
 def main():
     system("color 0a")
-    running = True
+    
+    guess = 1
     
     words = WORDS
     
-    i = input("Have you already made a first guess? y/n ")
-    i = i.lower()
-    
-    if i == "y":
-        words, guess = mid_game_join()
-        main_bot_loop(guess, words, running)
-    elif i == "n":
-        main_bot_loop(1, words, running)
-    else:
-        main()
-        
-    
-def mid_game_join():
-    words_guessed = input("Enter each individual word you've already guessed with a space in between them. ")
-    words_guessed = words_guessed.lower()
-    
-    guessed = words_guessed.split(" ")
-            
-    words_results = input("Enter the results of each word you've already guessed, with a space in between them. ")
-    
-    results_of_words = words_results.split(" ")
-    
-    words = WORDS
-    
-    for i in range(len(guessed)):
-        if guessed[i] in words:
-            words.remove(guessed[i])
-            words = update_word_list(words, guessed[i], results_of_words[i])
-        else:
-            print("A word might've been spelled incorrectly! Check your spelling and try again")
-            words, guess = mid_game_join()
-        
-    return words, len(guessed) + 1
-    
-def main_bot_loop(guess, words, running = False):
-    new_word = False
-    last_results = None
-    
-    old_words = WORDS
-    
-    while (running and guess <= 6):
-        try:
-            word = choice(words)
-        except IndexError:
-            print("Something went wrong, there are no remaining words in the list! Please enter the solution so that it may be added to the list of words.")
-            i = input("Word to add: ")
-            i = i.lower()
-            WORDS.append(i)
-            break
+    while guess <= 6:
+        word = choice(words)
         
         if guess == 1:
             word = choice(["adept", "clamp", "plaid", "scalp", "clasp", "depot", "print", "recap", "strap", "tramp",
-                           "slice", "tried", "crane", "leant", "close", "trice", "train", "slate", "lance", "trace"])
-            print(word)
-            words.remove(word)
-        elif new_word:
-            word = choice(old_words)
-            print(word)
-            words.remove(word)
+                           "slice", "tried", "crane", "leant", "close", "trice", "train", "slate", "lance", "trace", "other", "tales"])
         else:
-            scores = calculate_word_scores(words)
-            score = calculate_word_score(words, word)
+            scores = word_score(words)
+            maxValue = max(scores)
             
-            if score == max(scores):
-                should_print_word = True
-            else:
-                should_print_word = False
-                
-            if should_print_word:
-                print(word)
-                words.remove(word)
-            else:
-                continue
-        
-        results = input('Enter the results in the format "xxxxx"\n')
-        results = results.lower()
-        
-        if results == "ggggg":
-            print("Congratulations! You win!")
+            word = words[scores.index(maxValue)]
             
-            should_continue = input("Do you want to restart? Y/N\n")
-            should_continue = should_continue.lower()
-            
-            if should_continue == "y":
-                print("Restarting...")
-                sleep(1)
-                print("\n")
-                main()
-            elif should_continue == "n":
-                break
-        elif results == "restart":
-            print("Restarting...")
-            sleep(1)
-            print("\n")
-            main()
-        elif len(results) != 5:
-            results = incorrect_results()
-            
-        for i in range(len(results)):
-            if results[i] != "x" and results[i] != "y" and results[i] != "g":
-                results = incorrect_results()
+        print(word)
         
-        results = [char.strip() for char in results]
+        i = input("Enter the results in the format 'xxxxx'\n")
+        i = i.lower()
         
-        if last_results != results:
-            words = update_word_list(words, word, results)
-            new_word = False
-        else:
-            new_word = True
+        words = update_word_list(words, word, i)
         
         guess += 1
         
-def has_duplicate_letters(word):
-    return not len(set(word)) == len(word)
-
-def update_word_list(words, word, results):
-    for i in range(len(results)):
-        if results[i] == "x":
-            words = [x for x in words if word[i] not in x]
-        
-        if results[i] == "g":
-            words = [x for x in words if word[i] == x[i]]
-            
-        if results[i] == "y":
-            words = [x for x in words if word[i] != x[i]]
-            words = [x for x in words if word[i] in x]
+def update_word_list(words, word, result):
+    words.remove(word)
     
+    guessed = [*word]
+    results = [*result]
+    
+    
+    for i in range(len(results)):
+        if results[i] == "g":
+            words = [x for x in words if guessed[i] == x[i]]
+        elif results[i] == "y":
+            words = [x for x in words if guessed[i] in x]
+            words = [x for x in words if guessed[i] != x[i]]
+        elif results[i] == "x":
+            if "g" in results:
+                if guessed[i] == guessed[results.index("g")]:
+                    continue
+            elif "y" in results:
+                if guessed[i] == guessed[results.index("y")]:
+                    continue
+                
+            words = [x for x in words if guessed[i] not in x]
+            
     return words
 
-def calculate_word_scores(words):
-    scores = [] 
+def word_score(words):
+    totals = []
     
-    for i in range(len(words)):
-        score = 0 
+    for word in words:
+        value = 0
+        for i in range(len(word)):
+            if word[i] in words:
+                value += 1
+                
+        totals.append(value)
         
-        for j in range(len(words[i])):
-            if words[i][j] in words:
-                score += 1
-        scores.append(score)
-        
-    return scores
-
-def calculate_word_score(words, word):
-    score = 0
-    
-    for i in range(len(word)):
-        if word[i] in words:
-            score += 1
-            
-    return score
-
-def incorrect_results():
-    print("Whoops! Looks like the results were input incorrectly! Try again!")
-    i = input('Enter the results in the format "xxxxx"\n')
-    i = i.lower()
-    
-    if i == "ggggg":
-        print("Congratulations! You Win!")
-        
-        want_to_continue = input("Do you want to restart? Y/N\n")
-        want_to_continue = want_to_continue.lower()
-        
-        if want_to_continue == "y":
-            print("Restarting...")
-            sleep(1)
-            print("\n")
-            main()
-            
-    elif i == "restart":
-        print("Restarting")
-        sleep(1)
-        print("\n")
-        main()
-    
-    elif len(i) != 5:
-        i = incorrect_results()
-        
-    for j in range(len(i)):
-        if i[j] != "x" and i[j] != "y" and i[j] != "g":
-            i = incorrect_results()
-        
-    return i
+    return totals
 
 if __name__ == "__main__":
     main()
-    system("pause")
